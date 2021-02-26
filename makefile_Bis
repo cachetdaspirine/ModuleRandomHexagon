@@ -1,0 +1,74 @@
+####################################################
+#ON EST LA
+###################################################
+#Bon, mon gars!!!
+#Ce makefile de tes morts, il prends tous les .cpp
+#de ton dossier pour les compiler. De plus, ici l'
+#option lapackpp avec le chemin des bibliothèques
+#sont indiqués.
+
+
+
+CC =g++ #compilateur
+LIBS = #-I -llapackpp #library a utiliser
+#include of lapack are /usr/local/include/lapackpp
+INC = #/usr/local/include/lapackpp #la ou se trouvent les include
+#library lapack in /usr/local/lib/...
+PATH_lib = /usr/local/lib #la ou se trouve la library
+VERSION = -std=c++1y #derniere version de c++
+OPT = -O3 #optimisation de ouf
+EXEC= Aight #nom de l executable de sortie
+SRC=$(wildcard *.cpp)
+# une maniere de faire une liste de tout les .cpp dans le dossier
+OBJ=$(SRC:.cpp=.o) #convertie la liste de .cpp en une liste de .o
+HEAD=$(filter-out main.h System_c.h , $(SRC:.cpp=.h)) #converti tout les .cpp en .h sauf main.cpp et certains autres...
+DEBUG=yes
+WARNING=no
+MEMCHECK= #-g
+# vaut 1 si en mode DEBUG 0 si non Attention il faut avoir #ifdef DEBUG dans le main
+
+ifeq ($(DEBUG),yes)
+	FLAG=-DDEBUG
+else
+	FLAG=
+
+endif
+ifeq ($(WARNING),yes)
+	WARN=-W
+else
+	WARN=
+endif
+
+all: $(EXEC) #on appelle all au debut il va ensuite faire ce qu il faut pour creer EXEC
+
+$(EXEC) : $(OBJ) # donc on appelle ainsi EXEC qui regarde si la liste de .o a besoin d etre recompile
+	$(CC) $(OBJ) $(VERSION) -fPIC -L$(PATH_lib) $(LIBS) $(INC) -o $(EXEC) $(OPT) $(FLAG) $(MEMCHECK) $(WARN)
+#une fois que on aura satisfait la condition precedente on compilera le tout en mode DEBUG ou pas
+
+main.o: $(SRC) $(HEAD) #si mon programme main a besoin d etre recompile si je change les header
+makefile: $(SRC) $(HEAD)
+#System.o: $(SRC) $(HEAD)
+#Computation.o: $(SRC) $(HEAD)
+#Cluster.o: $(SRC) $(HEAD)
+#Particle.o: $(SRC) $(HEAD)
+#Print.o: $(SRC) $(HEAD)
+# main.o: System.h
+# main.o: Cluster.h
+# main.o: Parameter.h
+# main.o: Print.h
+# main.o: Computation.h
+# main.o: Particle.cpp
+# main.o:
+
+.cpp.o: #ca definit la regle generique a utiliser si on a besoin de creer un .o tout en verifiant que le .cpp a bien ete change depuis la derniere modification du .o
+	$(CC) $(VERSION) -fPIC -L$(PATH_lib) $(LIBS) -I$(INC) $(OPT) -c $< -o $@ $(FLAG) $(WARN)
+#$(CC) $(OBJ) $(VERSION) -L$(PATH_lib) $(LIBS) -I$(INC) -c $< -o $@ $(FLAG)
+#ligne de commande a utiliser si le .o doit etre creer
+#Particle.o : Particle.cpp
+#	$(CC) $(OBJ) $(VERSION) -L$(PATH_lib) $(LIBS) -I$(INC) -c $<
+
+.PHONY: clean #on a pas comprit, ca sert une fois sur mille mais vas y balek
+
+clean: #on supprime tous les fichiers a deux bales incluant l executable.
+	rm -rf *.o *~ $(EXEC)
+
