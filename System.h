@@ -24,7 +24,6 @@ class System{
   double get_Energy() const;
   void UpdateEnergy(int* Array,int SizeX, int SizeY);
   //Output functions :
-  void OutputSpring(const char* filename);
   void OutputSite(const char* filename);
   //-----------------------------------------------------------------------------------------------
   double K1,K2,Kvol,eps;
@@ -39,16 +38,12 @@ class System{
   // - the function ComputeEnergy just talk to the object CG to obtain an energy from the springs.
   std::map<int,Site*> sites;
   std::map<int,std::map<std::tuple<int,int>,Node*>> nodes;
-  std::map<std::pair<Node*,Node*>,Spring*> springs; // the springs are sorted by their node
-  std::map<std::pair<int,int>,Spring3*> springs3;
   void ResetNodePosition();
   bool NeighExist(int i, int j, int k);
   void g_G(int i, int j,double& Xg, double& Yg);
   void MakeSites();
   void ActualizeSites(std::vector<int>& Removed, std::vector<int>& Added);
   void MakeNodes();
-  void MakeSprings();
-  void MakeSpring3();
   void ComputeEnergy();
   void DeleteAllNode(int i, int j);
   //-----------------------------------------------------------------------------------------------

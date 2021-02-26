@@ -22,15 +22,6 @@ void CG::RemakeDoF(vector<Node*> nodes){
   }
 }
 
-void CG::RemakeSprings(std::map<std::pair<Node*, Node*>, Spring*> springs){
-  ham.springs=springs;
-}
-
-void CG::RemakeSpring3(std::map<std::pair<int,int>,Spring3*> springs3){
-  vector<Spring3*> vectsprings3;
-  for(auto& it: springs3){vectsprings3.push_back(it.second);}
-  ham.springs3=vectsprings3;
-}
 
 double CG::GetEnergy(){return Energy;}
 

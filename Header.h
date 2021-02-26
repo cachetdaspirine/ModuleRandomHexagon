@@ -36,19 +36,16 @@
 #include "dlinmin.h"
 #include "frprmn.h"
 
+#include "Ham.h"
 #include "Site.h"
 #include "Node.h"
-#include "Spring.h"
-#include "Spring3.h"
 
-#include "Ham.h"
 #include "CG.h"
 #include "System.h"
 
 // Include the structural part of the simulation
 #include "SiteAdjacency.h"
 #include "NodeAdjacency.h"
-#include "SpringAdjacency.h"
 
 //Require the structure to know how the nodes are arrange
 

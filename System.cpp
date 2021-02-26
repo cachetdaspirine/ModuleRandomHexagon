@@ -27,11 +27,7 @@ System::System(int* Array, int sizeX, int sizeY,double epsilon,double Kmain,doub
   DEBUG_IF(true){cout<<"Make the nodes"<<endl;}
   MakeNodes();
 
-  // Make the springs from the nodes we have
-  DEBUG_IF(true){cout<<"Make the springs"<<endl;}
-  MakeSprings();
-  MakeSpring3();
-  //OutputSpring("Pre_Energy_Test.txt");
+
   // Build the CG
   DEBUG_IF(true){cout<<"Build the CG"<<endl;}
   cg=new CG(K1,eps,K2,Kvol,sites.size());
@@ -65,8 +61,7 @@ System::System(const System& old_system)
       }
       }
     }}
-  MakeSprings();
-  MakeSpring3();
+
   cg=new CG(K1,eps,K2,Kvol,sites.size());
 
 
@@ -77,12 +72,6 @@ System::System(const System& old_system)
 System::~System()
 {
   // {{{ Destructor
-  DEBUG_IF(true){cout<<"delete the springs"<<endl;}
-  for(auto& it: springs){delete (it.second);}
-  springs.clear();
-  DEBUG_IF(true){cout<<"delete the springs3"<<endl;}
-  for(auto& it : springs3){delete it.second;}
-  springs3.clear();
   DEBUG_IF(true){cout<<"delete the inner nodes"<<endl;}
   for(auto& it : nodes[0]){delete it.second;}
   for(auto& it : nodes[1]){delete it.second;}
@@ -101,7 +90,7 @@ void System::UpdateEnergy(int *Array, int SizeX, int SizeY)
   // {{{ Update the Energy accordingly to the new state
 
   // Make the difference between this array and the "CurrentState" array to locate what changed.
-  // We then delete/Re-create the sites/nodes/springs of this location.
+  // We then delete/Re-create the sites/nodes of this location.
   if(SizeX != Lx | SizeY != Ly)
     {cout<<"Error int the size of the different array"<<endl;}
   // look at all the site position that changed
@@ -127,13 +116,7 @@ void System::UpdateEnergy(int *Array, int SizeX, int SizeY)
         SaveX[{1,get<0>(it.first),get<1>(it.first)}]=it.second->g_X();
         SaveY[{1,get<0>(it.first),get<1>(it.first)}]=it.second->g_Y();
       }
-  //delete We delete all the sites/spring/spring3
-  DEBUG_IF(true){cout<<"delete spring"<<endl;}
-  for(auto& it : springs){delete it.second;}
-  springs.clear();
-  DEBUG_IF(true){cout<<"delete spring3"<<endl;}
-  for(auto& it : springs3){delete it.second;}
-  springs3.clear();
+
   //for(auto& it : sites){delete it.second;}
   //sites.clear();
   DEBUG_IF(true){cout<<"Actualize sites"<<endl;}
@@ -147,8 +130,6 @@ void System::UpdateEnergy(int *Array, int SizeX, int SizeY)
   //--------------------------------
   //MakeSites();
   MakeNodes();
-  MakeSprings();
-  MakeSpring3();
   for(auto& it : SaveX)
     {
       try{nodes[get<0>(it.first)].at({get<1>(it.first),get<2>(it.first)})->set_X(it.second);}
@@ -176,8 +157,7 @@ void System::ComputeEnergy()
     nodetovect.push_back(it.second);
   }
   cg->RemakeDoF(nodetovect);
-  cg->RemakeSprings(springs);
-  cg->RemakeSpring3(springs3);
+
   cg->Evolv();
   cg->ActualizeNodePosition(nodetovect);
   cg->ActualizeGPosition(sites,nodes);
@@ -255,68 +235,7 @@ void System::MakeNodes()
     }
   }
 }
-void System::MakeSprings()
-{
-  // We build the spring site per site.
-  // it is the site that determine if a spring exist or not.
 
-  for(auto & it : sites){
-    // for a given site this returns the list of doublet of node index that should make a spring
-    vector<pair<int,int>> NodeIndex(GetSpringAdjacency(it.second->g_I(),it.second->g_J()));
-    for(auto& it2 : NodeIndex){
-      Node* N1;
-      Node* N2;
-      // Make sure that the N1>N2
-      if(nodes[it2.first][{it.second->g_I(),it.second->g_J()}]
-	 >nodes[it2.second][{it.second->g_I(),it.second->g_J()}])
-	{
-	  N1=nodes[it2.first][{it.second->g_I(),it.second->g_J()}];
-	  N2=nodes[it2.second][{it.second->g_I(),it.second->g_J()}];
-	}
-      else
-	{
-	  N1=nodes[it2.second][{it.second->g_I(),it.second->g_J()}];
-	  N2=nodes[it2.first][{it.second->g_I(),it.second->g_J()}];
-	}
-      try{springs.at({N1,N2})->Multiplicitypp();}
-      catch(const std::out_of_range& oor){
-	springs[{N1,N2}]=new Spring(N1,N2
-				    ,getK(it2.first,it2.second,this)
-				    ,getL0(it2.first,it2.second,this));
-      }
-    }
-  }
-}
-void System::MakeSpring3(){
-  for(auto& it: sites){
-    int i(it.second->g_I()),j(it.second->g_J());
-    vector<vector<int>> Index(GetSpring3Adjacency(i,j));
-    for(int n=0;n<Index.size();n++){
-      springs3[{it.first,n}]= new Spring3(nodes[Index[n][0]][{i,j}]
-				     ,nodes[Index[n][1]][{i,j}]
-					  ,nodes[Index[n][2]][{i,j}]
-				     ,getKvol(Index[n][0],Index[n][1],Index[n][2],this)
-				     ,getA0(Index[n][0],Index[n][1],Index[n][2],this));
-    }
-  }
-}
-// }}}
-
-// {{{ Output function
-void System::OutputSpring(const char* filename)
-{
-  ofstream Out;
-  Out.open(filename, ofstream::out | ofstream::trunc);
-  for(auto& it: springs)
-    {
-      //if(it.second->g_L0()==1+eps){
-      Out<<it.second->g_N1()->g_X()<<" "<<it.second->g_N1()->g_Y()<<" "
-	 <<it.second->g_N2()->g_X()<<" "<<it.second->g_N2()->g_Y()<<" "
-	 <<it.second->g_K()<<" "<<it.second->g_L0()<<endl;
-      //}
-    }
-  Out.close();
-}
 
 void System::OutputSite(const char* filename)
 {

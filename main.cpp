@@ -13,7 +13,6 @@ int main(int argc, char* argv[])
       1,1,1,1,1,1,1,1,1,1};
   System* system=new System(array,10,10,0.3,1.,1.,1.);
   cout<<system->get_Energy()<<endl;
-  system->OutputSpring("aight.txt");
   /*int array2[5*5]={0,0,0,0,0,
 		  0,0,1,1,0,
 		  0,1,1,1,0,
