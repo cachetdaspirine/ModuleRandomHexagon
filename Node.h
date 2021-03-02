@@ -3,7 +3,7 @@
 class Node{
  public:
   Node();
-  Node(Site* S,int k ,double eps);
+  Node(Site* S,int k);
   ~Node();
 
   std::map<int,int> g_I() const;

@@ -119,13 +119,13 @@ else if(k==5){
 return Res;
 };
 
-void SetInitialPosition(double& X, double& Y, int NodeIndex,double eps, double Xg, double Yg){
+void SetInitialPosition(double& X, double& Y, int NodeIndex, double Xg, double Yg){
   X = Xg;
   Y = Yg;
-  if(NodeIndex == 0){X+=0.2887*(1+eps);Y+=0.5*(1+eps);}
-  else if(NodeIndex == 1){X+=-0.2887*(1-eps);Y+=0.5*(1-eps);}
-  else if(NodeIndex == 2){X+=-0.5774*(1+eps);}
-  else if(NodeIndex == 3){X+=-0.2887*(1-eps);Y+=-0.5*(1-eps);}
-  else if(NodeIndex == 4){X+=0.2887*(1+eps);Y+=-0.5*(1+eps);}
-  else if(NodeIndex == 5){X+=0.5774*(1-eps);}
+  if(NodeIndex == 0){X+=0.2887*(1);Y+=0.5*(1);}
+  else if(NodeIndex == 1){X+=-0.2887*(1);Y+=0.5*(1);}
+  else if(NodeIndex == 2){X+=-0.5774*(1);}
+  else if(NodeIndex == 3){X+=-0.2887*(1);Y+=-0.5*(1);}
+  else if(NodeIndex == 4){X+=0.2887*(1);Y+=-0.5*(1);}
+  else if(NodeIndex == 5){X+=0.5774*(1);}
 };

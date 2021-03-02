@@ -4,8 +4,8 @@
 
 struct Ham{
   //std::map<std::pair<Node*, Node*>, Spring*> springs;
-  //std::vector<Spring3*> springs3;
-  double Eflip=0;
+  std::set<Spring*> springs;
+  double Eflip;
   void CheckSteadiness(VecDoub_I &x, double EmaxSpring, double EmaxSpring3)
   {
 
@@ -16,11 +16,17 @@ struct Ham{
   }
   Doub operator() (VecDoub_I &x)
   {
-    return 0;
+    Doub f(0);
+    for(auto& it : springs){
+      f+=it->F(x);
+    }
+    return f;
   }
   void df(VecDoub_I &x, VecDoub_O &deriv)
   {
-
+    for(auto& it: springs){
+      it->dF(x,deriv);
+    }
   }
   };
 #endif
