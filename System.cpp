@@ -1,15 +1,17 @@
 #include "Header.h"
-
 using namespace std;
+array<double,12*12> Spring::CouplingMaxtrix;
+array<double,12> Spring::q0;
 System::System(int* Array, double* Mc, double* q_0,int sizeX, int sizeY)
 {
         // {{{ constructor
-        //array<double,12*12> Spring::CouplingMaxtrix;
+
+
         for(int i =0; i<12*12; i++) {
                 Spring::CouplingMaxtrix[i] = Mc[i];
                 CouplingMaxtrix[i] = Mc[i];
         }
-        //array<double,12> Spring::q0;
+
         for(int i = 0; i<12; i++) {
                 Spring::q0 [i] = q_0[i];
                 q0[i] = q_0[i];
@@ -194,7 +196,7 @@ void System::UpdateEnergy(int *Array, int SizeX, int SizeY)
 void System::ComputeEnergy()
 {
         bool Re(false);
-Evolv:
+//Evolv:
         vector<Node*> nodetovect;
         for(auto& it: nodes[0]) {
                 nodetovect.push_back(it.second);
@@ -202,19 +204,27 @@ Evolv:
         for(auto& it: nodes[1]) {
                 nodetovect.push_back(it.second);
         }
+        DEBUG_IF(true){cout<<"Remake Dof"<<endl;}
         cg->RemakeDoF(nodetovect);
+        DEBUG_IF(true){cout<<"RemakeSprings"<<endl;}
         cg->RemakeSprings(springs);
+        DEBUG_IF(true){cout<<"Evolv"<<endl;}
         cg->Evolv();
+        DEBUG_IF(true){cout<<"actalize node position"<<endl;}
         cg->ActualizeNodePosition(nodetovect);
+        DEBUG_IF(true){cout<<"Actualize sites position"<<endl;}
         cg->ActualizeGPosition(sites,nodes);
         Energy=cg->GetEnergy();
+        /*
         if(Re) {return;}
         if(cg->CheckStability())
         {
                 ResetNodePosition();
                 Re=true;
                 goto Evolv;
-        }
+        }        */
+
+
 }
 double System::get_Energy() const {
         return Energy;

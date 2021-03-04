@@ -32,6 +32,11 @@ double CG::GetEnergy(){
 
 void CG::Evolv(){
         Frprmn<Ham> frprmn(ham);
+        //cout<<"Print the degree of freedom before the minimization"<<endl;
+        //for(int i =0; i<DoF.size();i++){cout<<DoF[i]<<endl;}
+        //cout<<"Print the q0"<<endl;
+        //for(auto& it : Spring::q0){cout<<it<<endl;}
+        //cout<<ham(DoF)<<endl;
         DoF=frprmn.minimize(DoF);
         Energy=ham(DoF);
         // output the energy of each type of springs
