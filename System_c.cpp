@@ -17,6 +17,16 @@ extern "C"
     System* system = reinterpret_cast<System* >(ptr);
     delete system;
   }
+  double GetBulkEnergy(void* ptr)
+{
+  try
+    {
+System* system = reinterpret_cast<System *>(ptr);
+return system->Get_BulkEnergy();
+    }
+  catch(int e)
+    {cout<<"Error "<<e<<"\n";}
+}
   void UpdateSystemEnergy(void* ptr,int* array, int LX, int LY)
   {
     try

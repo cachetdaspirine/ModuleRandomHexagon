@@ -24,7 +24,9 @@ void CG::RemakeDoF(vector<Node*> nodes){
 void CG::RemakeSprings(set<Spring*> springs){
   ham.springs = springs;
 }
-
+double CG::ComputeEnergy(){
+return ham(DoF);
+}
 
 double CG::GetEnergy(){
         return Energy;
@@ -37,6 +39,7 @@ void CG::Evolv(){
         //cout<<"Print the q0"<<endl;
         //for(auto& it : Spring::q0){cout<<it<<endl;}
         //cout<<ham(DoF)<<endl;
+        cout<<ham(DoF)<<endl;
         DoF=frprmn.minimize(DoF);
         Energy=ham(DoF);
         // output the energy of each type of springs

@@ -4,6 +4,7 @@ class CG{
  public:
   CG(int Npart);
   double GetEnergy();
+  double ComputeEnergy();
   void RemakeDoF(std::vector<Node*> nodes);
   void RemakeSprings(std::set<Spring*> springs);
   void ActualizeNodePosition(std::vector<Node*> nodes);

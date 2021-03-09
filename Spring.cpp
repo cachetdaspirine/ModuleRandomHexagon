@@ -33,7 +33,7 @@ double Spring::F(VecDoub_I & X){
         double f(0);
         for(int i = 0; i<q.size(); i++) {
                 for(int j = 0; j<q.size(); j++) {
-                        f+=(q[i]-Spring::q0[i])
+                        f+=0.5*(q[i]-Spring::q0[i])
                         * Spring::CouplingMaxtrix[i+12*j]
                         * (q[j]-Spring::q0[j]);
                 }
@@ -67,11 +67,11 @@ void Spring::dF(VecDoub_I &x, VecDoub_O & deriv){
         for(int i = 0; i<nodes.size(); i++) {
           for(int k = 0; k<q.size(); k++){
                 deriv[nodes[i]->g_IX()] += (q[k]-Spring::q0[k])
-                *(Spring::CouplingMaxtrix[2*i+12*k]+
-                  Spring::CouplingMaxtrix[k+12*2*i]);
+                *(Spring::CouplingMaxtrix[2*i+12*k]);//+
+                //  Spring::CouplingMaxtrix[k+12*2*i]);
                 deriv[nodes[i]->g_IY()] += (q[k]-Spring::q0[k])
-                *(Spring::CouplingMaxtrix[2*i+12*k+1]+
-                  Spring::CouplingMaxtrix[k+12*2*i+1]);
+                *(Spring::CouplingMaxtrix[2*i+12*k+1]);//+
+                  //Spring::CouplingMaxtrix[k+12*2*i+1]);
               }
         }
 

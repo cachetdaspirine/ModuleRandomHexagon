@@ -40,7 +40,9 @@ System::System(int* Array, double* Mc, double* q_0,int sizeX, int sizeY)
         }
         MakeNodes();
 
-        DEBUG_IF(true){cout<<"Make the springs"<<endl;}
+        DEBUG_IF(true){
+                cout<<"Make the springs"<<endl;
+        }
         MakeSprings();
 
         // Build the CG
@@ -93,8 +95,10 @@ System::System(const System& old_system)
 System::~System()
 {
         // {{{ Destructor
-        DEBUG_IF(true){cout<<"delete the springs"<<endl;}
-        for(auto& it: springs){delete (it);}
+        DEBUG_IF(true){
+                cout<<"delete the springs"<<endl;
+        }
+        for(auto& it: springs) {delete (it);}
         springs.clear();
         DEBUG_IF(true){
                 cout<<"delete the inner nodes"<<endl;
@@ -155,8 +159,10 @@ void System::UpdateEnergy(int *Array, int SizeX, int SizeY)
 
         //for(auto& it : sites){delete it.second;}
         //sites.clear();
-        DEBUG_IF(true){cout<<"delete spring"<<endl;}
-        for(auto& it : springs){delete it;}
+        DEBUG_IF(true){
+                cout<<"delete spring"<<endl;
+        }
+        for(auto& it : springs) {delete it;}
         springs.clear();
         DEBUG_IF(true){
                 cout<<"Actualize sites"<<endl;
@@ -197,6 +203,7 @@ void System::ComputeEnergy()
 {
         bool Re(false);
 //Evolv:
+
         vector<Node*> nodetovect;
         for(auto& it: nodes[0]) {
                 nodetovect.push_back(it.second);
@@ -204,25 +211,35 @@ void System::ComputeEnergy()
         for(auto& it: nodes[1]) {
                 nodetovect.push_back(it.second);
         }
-        DEBUG_IF(true){cout<<"Remake Dof"<<endl;}
+        DEBUG_IF(true){
+                cout<<"Remake Dof"<<endl;
+        }
         cg->RemakeDoF(nodetovect);
-        DEBUG_IF(true){cout<<"RemakeSprings"<<endl;}
+        DEBUG_IF(true){
+                cout<<"RemakeSprings"<<endl;
+        }
         cg->RemakeSprings(springs);
-        DEBUG_IF(true){cout<<"Evolv"<<endl;}
+        DEBUG_IF(true){
+                cout<<"Evolv"<<endl;
+        }
         cg->Evolv();
-        DEBUG_IF(true){cout<<"actalize node position"<<endl;}
+        DEBUG_IF(true){
+                cout<<"actalize node position"<<endl;
+        }
         cg->ActualizeNodePosition(nodetovect);
-        DEBUG_IF(true){cout<<"Actualize sites position"<<endl;}
+        DEBUG_IF(true){
+                cout<<"Actualize sites position"<<endl;
+        }
         cg->ActualizeGPosition(sites,nodes);
         Energy=cg->GetEnergy();
         /*
-        if(Re) {return;}
-        if(cg->CheckStability())
-        {
+           if(Re) {return;}
+           if(cg->CheckStability())
+           {
                 ResetNodePosition();
                 Re=true;
                 goto Evolv;
-        }        */
+           }        */
 
 
 }
@@ -295,13 +312,13 @@ void System::MakeNodes()
 }
 
 void System::MakeSprings(){
-  for(auto& it : sites){
-    array<Node*,6> SpringNode;
-    for(int k = 0; k<6;k++){
-      SpringNode[k] = nodes[k][{it.second->g_I(),it.second->g_J()}];
-    }
-    springs.insert(new Spring(SpringNode));
-  }
+        for(auto& it : sites) {
+                array<Node*,6> SpringNode;
+                for(int k = 0; k<6; k++) {
+                        SpringNode[k] = nodes[k][{it.second->g_I(),it.second->g_J()}];
+                }
+                springs.insert(new Spring(SpringNode));
+        }
 }
 
 
@@ -326,6 +343,27 @@ void System:: g_G(int i, int j, double& Xg, double& Yg){
 bool System::NeighExist(int i, int j, int k)
 {
 
+}
+double System::Get_BulkEnergy(){
+        //ResetNodePosition(eps);
+        for(auto& site : sites) {
+                double I(site.second->g_I());
+                double J(site.second->g_J());
+                std::vector<int> nodes_index(g_nodes_from_site(I,J));
+                for(auto& n_index : nodes_index) {
+                        nodes[n_index][{I,J}]->ResetPosition(n_index);
+                }
+        }
+        vector<Node*> nodetovect;
+        for(auto& it: nodes[0]) {
+                nodetovect.push_back(it.second);
+        }
+        for(auto& it: nodes[1]) {
+                nodetovect.push_back(it.second);
+        }
+        cg->RemakeDoF(nodetovect);
+        cg->RemakeSprings(springs);
+        return cg->ComputeEnergy();
 }
 
 /*

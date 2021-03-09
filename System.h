@@ -22,6 +22,7 @@ System(const System& old_system);
 //-----------------------------------------------------------------------------------------------
 // Thos are the only two public function in our class.
 double get_Energy() const;
+double Get_BulkEnergy();
 void UpdateEnergy(int* Array,int SizeX, int SizeY);
 //Output functions :
 void OutputSite(const char* filename);
