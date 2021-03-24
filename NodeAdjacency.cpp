@@ -130,3 +130,48 @@ void SetInitialPosition(double& X, double& Y, int NodeIndex, double Xg, double Y
   else if(NodeIndex == 4){X+=0.2887*(1+eps);Y+=-0.5*(1+eps);}
   else if(NodeIndex == 5){X+=0.5774*(1-eps);}
 };
+vector<tuple<int,int,int>> Get_Boundary_Nodes(bool TopOrLeft, bool Horizontal,int Lx,int Ly)
+{
+  /*
+               true, true
+                ______
+               |      |
+   true, false |      | false, false
+               |______|
+               false, true
+
+    */
+    std::vector<tuple<int,int,int>> Index;
+    if(TopOrLeft){
+        if(Horizontal){// top
+          for(int i=0;i<Lx;i++){
+              Index.push_back({i,Ly-1,0});
+              Index.push_back({i,Ly-1,1});
+              Index.push_back({i,Ly-1,2});
+            }
+        }
+        else{//left
+          for(int i = 0; i<Ly;i++){
+              Index.push_back({0,i,1});
+              Index.push_back({1,i,2});
+              Index.push_back({1,i,3});
+          }
+        }
+    }
+    else{
+      if(Horizontal){ // bottom
+        for(int i=0;i<Lx;i++){
+            Index.push_back({i,0,3});
+            Index.push_back({i,0,4});
+            Index.push_back({i,0,5});        }
+      }
+      else{//right
+        for(int i = 0; i<Ly;i++){
+            Index.push_back({Ly-1,i,0});
+            Index.push_back({Ly-1,i,5});
+            Index.push_back({Ly-1,i,4});
+          }
+        }
+      }
+    return Index;
+};

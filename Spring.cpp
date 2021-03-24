@@ -6,13 +6,16 @@ Spring::Spring(array<Node*,6> Nodes){
 
 double Spring::F(VecDoub_I & X){
         // Compute the center of mass of the 'spring'
+        if(nodes.size()==0 || isnan(nodes.size())){cout<<"nodes not good"<<endl;exit(0);}
         double Xg(0),Yg(0);
         for( auto & n : nodes) {
                 Xg+=X[n->g_IX()];
                 Yg+=X[n->g_IY()];
+
         }
         Xg = Xg/nodes.size();
         Yg = Yg/nodes.size();
+        //if(isnan(Xg) || isnan(Yg)){cout<<nodes.size()<<endl<<Xg<<" "<<Yg<<endl;}
         //cout<<"Xg,Yg computed"<<endl;
         //------------------------------------------
         //------------------------------------------
@@ -33,6 +36,8 @@ double Spring::F(VecDoub_I & X){
         double f(0);
         for(int i = 0; i<q.size(); i++) {
                 for(int j = 0; j<q.size(); j++) {
+                  //if(isnan(q[i])){cout<<"qi";}
+                  //if(isnan(q[j])){cout<<"qj";}
                         f+=0.5*(q[i]-Spring::q0[i])
                         * Spring::CouplingMaxtrix[i+12*j]
                         * (q[j]-Spring::q0[j]);
@@ -40,6 +45,7 @@ double Spring::F(VecDoub_I & X){
         }
         //cout<<"ok"<<endl;
         //cin>>aight;
+        //if(isnan(f)){cout<<"f not good"<<endl;exit(0);}
         return f;
 }
 void Spring::dF(VecDoub_I &x, VecDoub_O & deriv){

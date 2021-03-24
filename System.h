@@ -23,12 +23,15 @@ System(const System& old_system);
 // Thos are the only two public function in our class.
 double get_Energy() const;
 double Get_BulkEnergy();
+double Get_Extension(int ax);
+void MoveNodes(double Gx, double Gy);
 void UpdateEnergy(int* Array,int SizeX, int SizeY);
 //Output functions :
 void OutputSite(const char* filename);
 //-----------------------------------------------------------------------------------------------
 double K1,K2,Kvol,eps;
 private:
+vector<Node*> GetSideNodes(bool TopOrLeft,bool Horizontal);  
 double Energy;
 vector<int> CurrentState;
 array<double, 12*12> CouplingMaxtrix;   // needed for copy constructor

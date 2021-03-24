@@ -7,6 +7,20 @@ extern "C"
   {
     return new(std::nothrow) System(array,Mc,q_0,LX,LY);
   }
+  double AffineDeformation(void* ptr, double Gx, double Gy)
+  {
+    System* system = reinterpret_cast<System* >(ptr);
+    //double Ebefore(system->get_Energy());
+    system->MoveNodes(Gx,Gy);
+    //cout<<"After deformation "<<system->get_Energy()<<endl<<endl;
+    //cout<<"Before defomartion "<<Ebefore<<endl<<endl;
+    return system->get_Energy()//-Ebefore;
+  }
+  double Extension(void* ptr, int ax)
+  {
+  System* system = reinterpret_cast<System* >(ptr);
+  return system->Get_Extension(ax);
+  }
   void* CopySystem(void* ptr)
   {
     System* system = reinterpret_cast<System* >(ptr);

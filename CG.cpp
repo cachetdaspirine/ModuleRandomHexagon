@@ -29,7 +29,10 @@ return ham(DoF);
 }
 
 double CG::GetEnergy(){
-        return Energy;
+  //for(int n=0;n<DoF.size();n++){cout<<DoF[n]<<endl;}
+  //cout<<endl;
+  //cout<<endl;
+  return ham(DoF);
 }
 
 void CG::Evolv(){
@@ -39,7 +42,7 @@ void CG::Evolv(){
         //cout<<"Print the q0"<<endl;
         //for(auto& it : Spring::q0){cout<<it<<endl;}
         //cout<<ham(DoF)<<endl;
-        cout<<ham(DoF)<<endl;
+        //cout<<ham(DoF)<<endl;
         DoF=frprmn.minimize(DoF);
         Energy=ham(DoF);
         // output the energy of each type of springs
