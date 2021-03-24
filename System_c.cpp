@@ -14,7 +14,7 @@ extern "C"
     system->MoveNodes(Gx,Gy);
     //cout<<"After deformation "<<system->get_Energy()<<endl<<endl;
     //cout<<"Before defomartion "<<Ebefore<<endl<<endl;
-    return system->get_Energy()//-Ebefore;
+    return system->get_Energy();//-Ebefore;
   }
   double Extension(void* ptr, int ax)
   {
