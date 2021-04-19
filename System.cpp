@@ -84,7 +84,7 @@ System::System(const System& old_system)
                                                           }
                                                   }
                                           }}
-
+        MakeSprings();
         cg=new CG(sites.size());
 
 
@@ -201,9 +201,7 @@ void System::UpdateEnergy(int *Array, int SizeX, int SizeY)
 }
 void System::ComputeEnergy()
 {
-        bool Re(false);
 //Evolv:
-
         vector<Node*> nodetovect;
         for(auto& it: nodes[0]) {
                 nodetovect.push_back(it.second);
@@ -243,8 +241,11 @@ void System::ComputeEnergy()
 
 
 }
+double System::ReComputeEnergy() const{
+  return cg->ComputeEnergy();
+}
 double System::get_Energy() const {
-        return cg->GetEnergy();
+        return Energy;
 }
 
 // {{{ Private Function
@@ -326,7 +327,8 @@ void System::OutputSite(const char* filename)
 {
         ofstream Out;
         Out.open(filename, ofstream::out | ofstream::trunc);
-        for(auto& it: sites)
+        /*
+for(auto& it: sites)
         {
                 vector<int> Index(it.second->g_nodes());
                 int i(it.second->g_I()),j(it.second->g_J());
@@ -335,6 +337,12 @@ void System::OutputSite(const char* filename)
                         Out<<nodes[ind][{i,j}]->g_X()<<" "<<nodes[ind][{i,j}]->g_Y()<<" ";
                 }
                 Out<<"\n";
+        }*/
+        for(auto& spring : springs){
+          for(auto& node : spring->g_nodes()){
+            Out<< node->g_X() << " " << node->g_Y()<<" ";
+          }
+          Out<<spring->get_E()<<"\n";
         }
         Out.close();
 }

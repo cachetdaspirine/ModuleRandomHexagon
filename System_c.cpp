@@ -14,7 +14,7 @@ extern "C"
     system->MoveNodes(Gx,Gy);
     //cout<<"After deformation "<<system->get_Energy()<<endl<<endl;
     //cout<<"Before defomartion "<<Ebefore<<endl<<endl;
-    return system->get_Energy();//-Ebefore;
+    return system->ReComputeEnergy();//-Ebefore;
   }
   double Extension(void* ptr, int ax)
   {
@@ -49,6 +49,15 @@ return system->Get_BulkEnergy();
 	system->UpdateEnergy(array,LX,LY);
       }
     catch(int e){cout<<"Error "<<e<<"\n";}
+  }
+  double ReComputeSystemEnergy(void* ptr){
+    try
+      {
+        System* system = reinterpret_cast<System *>(ptr);
+        return system->ReComputeEnergy();
+      }
+    catch(int e)
+      {cout<<"Error "<<e<<"\n";}
   }
   double GetSystemEnergy(void* ptr)
   {

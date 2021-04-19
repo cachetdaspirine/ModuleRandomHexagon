@@ -27,13 +27,7 @@ void CG::RemakeSprings(set<Spring*> springs){
 double CG::ComputeEnergy(){
 return ham(DoF);
 }
-
-double CG::GetEnergy(){
-  //for(int n=0;n<DoF.size();n++){cout<<DoF[n]<<endl;}
-  //cout<<endl;
-  //cout<<endl;
-  return ham(DoF);
-}
+double CG::GetEnergy(){return Energy;}
 
 void CG::Evolv(){
         Frprmn<Ham> frprmn(ham);
@@ -60,8 +54,8 @@ void CG::ActualizeNodePosition(std::vector<Node*> nodes){
         for(auto& it: nodes) {
                 if(it->g_IX()!=-1 or it->g_IY()!=-1)
                 {
-                        it->set_X(DoF[it->g_IX()]);
-                        it->set_Y(DoF[it->g_IY()]);
+                  it->set_X(DoF[it->g_IX()]);
+                  it->set_Y(DoF[it->g_IY()]);
                 }
         }
 }

@@ -7,7 +7,10 @@ public:
   Spring(array<Node*,6> Nodes);
   double F(VecDoub_I & X);
   void dF(VecDoub_I &x, VecDoub_O & deriv);
+  std::array<Node*,6> g_nodes() const;
+  double get_E() const;
 private:
-  array<Node*,6> nodes;
+  std::array<Node*,6> nodes;
+  double E;
 };
 #endif

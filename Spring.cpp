@@ -1,9 +1,40 @@
 #include  "Header.h"
 
+using namespace std;
+
 Spring::Spring(array<Node*,6> Nodes){
         nodes = Nodes;
+        E = 0;
 }
-
+array<Node*,6> Spring::g_nodes() const{
+  return nodes;
+}
+double Spring::get_E() const {
+  double Xg(0),Yg(0);
+  for( auto & n : nodes) {
+          Xg+=n->g_X();
+          Yg+=n->g_Y();
+  }
+  Xg = Xg/nodes.size();
+  Yg = Yg/nodes.size();
+  array<double,12> q;
+  for(int i =0; i<nodes.size(); i++) {
+          q[2*i] = nodes[i]->g_X()-Xg;
+          q[2*i+1] = nodes[i]->g_Y()-Yg;
+  }
+  double f(0);
+  for(int i = 0; i<q.size(); i++) {
+          for(int j = 0; j<q.size(); j++) {
+            //if(isnan(q[i])){cout<<"qi";}
+            //if(isnan(q[j])){cout<<"qj";}
+                  f+=0.5*(q[i]-Spring::q0[i])
+                  * Spring::CouplingMaxtrix[i+12*j]
+                  * (q[j]-Spring::q0[j]);
+          }
+  }
+  return f;
+  //return E;
+}
 double Spring::F(VecDoub_I & X){
         // Compute the center of mass of the 'spring'
         if(nodes.size()==0 || isnan(nodes.size())){cout<<"nodes not good"<<endl;exit(0);}
