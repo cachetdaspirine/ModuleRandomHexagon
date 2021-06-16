@@ -7,6 +7,23 @@ extern "C"
   {
     return new(std::nothrow) System(array,Mc,q_0,LX,LY);
   }
+
+  int GetNDOF(void* ptr)
+  {
+    System* system = reinterpret_cast<System* >(ptr);
+    return system->GetNdof();
+  }
+  void GetHessian(void* ptr, double* Hessian, int length)
+  {
+    System* system = reinterpret_cast<System* >(ptr);
+    system->GetHessian(Hessian,length);
+    //for(int i =0 ; i<length;i++){for( int j =0;j<length;j++){cout<<Hessian[i+j*length]<<" ";}cout<<endl;}
+  }
+  void GetGradient(void* ptr, double* Gradient, int length)
+  {
+    System* system = reinterpret_cast<System* >(ptr);
+    system->GetGradient(Gradient,length);
+  }
   double AffineDeformation(void* ptr, double Gx, double Gy)
   {
     System* system = reinterpret_cast<System* >(ptr);

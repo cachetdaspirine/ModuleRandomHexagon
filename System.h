@@ -23,6 +23,9 @@ System(const System& old_system);
 // Thos are the only two public function in our class.
 double get_Energy() const;
 double ReComputeEnergy() const;
+int GetNdof() const;
+void GetHessian(double* Hessian,int size) const;
+void GetGradient(double* Gradient, int length) const;
 double Get_BulkEnergy();
 double Get_Extension(int ax);
 void MoveNodes(double Gx, double Gy);
@@ -35,8 +38,8 @@ private:
 vector<Node*> GetSideNodes(bool TopOrLeft,bool Horizontal);
 double Energy;
 vector<int> CurrentState;
-array<double, 12*12> CouplingMaxtrix;   // needed for copy constructor
-array<double,12> q0;  // needed for copy constructor
+array<double, 9*9> CouplingMaxtrix;   // needed for copy constructor
+array<double,9> rho0;  // needed for copy constructor
 //-----------------------------------------------------------------------------------------------
 // The idea is simple :
 // - make the sites from the 0/1 array (sites have pre-built constructor for that).

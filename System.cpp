@@ -1,20 +1,20 @@
 #include "Header.h"
 using namespace std;
-array<double,12*12> Spring::CouplingMaxtrix;
-array<double,12> Spring::q0;
-System::System(int* Array, double* Mc, double* q_0,int sizeX, int sizeY)
+array<double,9*9> Spring::CouplingMaxtrix;
+array<double,9> Spring::rho0;
+System::System(int* Array, double* Mc, double* rho_0,int sizeX, int sizeY)
 {
         // {{{ constructor
 
 
-        for(int i =0; i<12*12; i++) {
+        for(int i =0; i<9*9; i++) {
                 Spring::CouplingMaxtrix[i] = Mc[i];
                 CouplingMaxtrix[i] = Mc[i];
         }
 
-        for(int i = 0; i<12; i++) {
-                Spring::q0 [i] = q_0[i];
-                q0[i] = q_0[i];
+        for(int i = 0; i<9; i++) {
+                Spring::rho0 [i] = rho_0[i];
+                rho0[i] = rho_0[i];
         }
         Lx=sizeX;
         Ly=sizeY;
@@ -56,6 +56,7 @@ System::System(int* Array, double* Mc, double* q_0,int sizeX, int sizeY)
         }
         ComputeEnergy();
 
+
         // }}}
 }
 System::System(const System& old_system)
@@ -65,7 +66,7 @@ System::System(const System& old_system)
         Lx=old_system.Lx;
         Ly=old_system.Ly;
         CouplingMaxtrix = old_system.CouplingMaxtrix;
-        q0 = old_system.q0;
+        rho0 = old_system.rho0;
         //K1=old_system.K1;
         //K2=old_system.K2;
         //Kvol=old_system.Kvol;
@@ -198,6 +199,21 @@ void System::UpdateEnergy(int *Array, int SizeX, int SizeY)
         ComputeEnergy();
 
         // }}}
+}
+int System::GetNdof() const{return nodes.at(0).size()+nodes.at(1).size();}
+void System::GetHessian(double* Hessian,int length) const
+{
+  //double Hessian[2*nodes.size()*2*nodes.size()];
+  DEBUG_IF(true){cout<<"Start the computation of the hessian"<<endl;}
+  for(auto& spring: springs){
+    spring->ddF(Hessian,length);
+  }
+}
+void System::GetGradient(double* Gradient, int length) const
+{
+  for(auto& spring: springs){
+    spring->dE(Gradient);
+  }
 }
 void System::ComputeEnergy()
 {
