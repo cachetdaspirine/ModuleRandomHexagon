@@ -19,6 +19,12 @@ extern "C"
     system->GetHessian(Hessian,length);
     //for(int i =0 ; i<length;i++){for( int j =0;j<length;j++){cout<<Hessian[i+j*length]<<" ";}cout<<endl;}
   }
+  void GetDOFIndex(void* prt, int* IList,int* JList,int* KList,bool* XList)
+  {
+    // Size of the list must be NDOF
+    System* system = reinterpret_cast<System* >(ptr);
+    system->GetDOFIndex(IList,JList,KList,length));
+  }
   void GetGradient(void* ptr, double* Gradient, int length)
   {
     System* system = reinterpret_cast<System* >(ptr);

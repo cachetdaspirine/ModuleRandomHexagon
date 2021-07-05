@@ -200,13 +200,43 @@ void System::UpdateEnergy(int *Array, int SizeX, int SizeY)
 
         // }}}
 }
-int System::GetNdof() const{return nodes.at(0).size()+nodes.at(1).size();}
+int System::GetNdof() const{return 2*(nodes.at(0).size()+nodes.at(1).size());}
 void System::GetHessian(double* Hessian,int length) const
 {
   //double Hessian[2*nodes.size()*2*nodes.size()];
   DEBUG_IF(true){cout<<"Start the computation of the hessian"<<endl;}
   for(auto& spring: springs){
     spring->ddF(Hessian,length);
+  }
+}
+void System::GetDOFIndex(int* IList,int* JList,int* KList,bool* XList) const
+{
+  // (i,j,1/2)
+  int NDOF(GetNdof())
+  for(auto& it : nodes[0])
+  {
+    IList[it->G_IX()] = it->g_I();
+    JList[it->G_IX()] = it->g_J();
+    KList[it->G_IX()] = 0;
+    XList[it->G_IX()] = True;
+
+    IList[it->G_IY()] = it->g_I();
+    JList[it->G_IY()] = it->g_J();
+    KList[it->G_IY()] = 0;
+    XList[it->G_IY()] = False;
+  }
+
+  for(auto& it : nodes[1])
+  {
+    IList[it->G_IX()] = it->g_I();
+    JList[it->G_IX()] = it->g_J();
+    KList[it->G_IX()] = 1;
+    XList[it->G_IX()] = True;
+
+    IList[it->G_IY()] = it->g_I();
+    JList[it->G_IY()] = it->g_J();
+    KList[it->G_IY()] = 1;
+    XList[it->G_IY()] = False;
   }
 }
 void System::GetGradient(double* Gradient, int length) const
