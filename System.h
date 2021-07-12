@@ -24,6 +24,7 @@ System(const System& old_system);
 double get_Energy() const;
 double ReComputeEnergy() const;
 int GetNdof() const;
+void GetDOFIndex(double* XYs) const;//int* IList,int* JList,int* KList,int* XList) const;
 void GetHessian(double* Hessian,int size) const;
 void GetGradient(double* Gradient, int length) const;
 double Get_BulkEnergy();
@@ -32,6 +33,7 @@ void MoveNodes(double Gx, double Gy);
 void UpdateEnergy(int* Array,int SizeX, int SizeY);
 //Output functions :
 void OutputSite(const char* filename);
+void OutputSite(const char* filename,bool Extended);
 //-----------------------------------------------------------------------------------------------
 double K1,K2,Kvol,eps;
 private:

@@ -209,35 +209,61 @@ void System::GetHessian(double* Hessian,int length) const
     spring->ddF(Hessian,length);
   }
 }
-void System::GetDOFIndex(int* IList,int* JList,int* KList,bool* XList) const
+void System::GetDOFIndex(double* XYs) const//int* IList,int* JList,int* KList,int* XList) const
 {
   // (i,j,1/2)
-  int NDOF(GetNdof())
-  for(auto& it : nodes[0])
+  /*int NDOF(GetNdof());
+  array<int,3> ks0={0,2,4};
+  array<int,3> ks1={1,3,5};
+  for(auto& it: nodes.at(0))
   {
-    IList[it->G_IX()] = it->g_I();
-    JList[it->G_IX()] = it->g_J();
-    KList[it->G_IX()] = 0;
-    XList[it->G_IX()] = True;
+    for(auto& k : ks0){
+      if(CurrentState[it.second->g_I()[k]+Lx*it.second->g_J()[k]]==1){
+        IList[it.second->g_IX()] = it.second->g_I()[k];
+        JList[it.second->g_IX()] = it.second->g_J()[k];
+        KList[it.second->g_IX()] = k;
+        XList[it.second->g_IX()] = 1;
 
-    IList[it->G_IY()] = it->g_I();
-    JList[it->G_IY()] = it->g_J();
-    KList[it->G_IY()] = 0;
-    XList[it->G_IY()] = False;
+
+        IList[it.second->g_IY()] = it.second->g_I()[k];
+        JList[it.second->g_IY()] = it.second->g_J()[k];
+        KList[it.second->g_IY()] = k;
+        XList[it.second->g_IY()] = 0;
+        break;
+      }
+    }
   }
 
-  for(auto& it : nodes[1])
+  for(auto& it : nodes.at(1))
   {
-    IList[it->G_IX()] = it->g_I();
-    JList[it->G_IX()] = it->g_J();
-    KList[it->G_IX()] = 1;
-    XList[it->G_IX()] = True;
+    for(auto& k : ks1){
+      if(CurrentState[it.second->g_I()[k]+Lx*it.second->g_J()[k]]==1){
+        IList[it.second->g_IX()] = it.second->g_I()[k];
+        JList[it.second->g_IX()] = it.second->g_J()[k];
+        KList[it.second->g_IX()] = k;
+        XList[it.second->g_IX()] = 1;
 
-    IList[it->G_IY()] = it->g_I();
-    JList[it->G_IY()] = it->g_J();
-    KList[it->G_IY()] = 1;
-    XList[it->G_IY()] = False;
+        IList[it.second->g_IY()] = it.second->g_I()[k];
+        JList[it.second->g_IY()] = it.second->g_J()[k];
+        KList[it.second->g_IY()] = k;
+        XList[it.second->g_IY()] = 0;
+      }
+    }
+  }*/
+  for(auto& it: nodes.at(0)){
+    XYs[it.second->g_IX()] = it.second->g_X();
+    XYs[it.second->g_IY()] = it.second->g_Y();
   }
+  for(auto& it: nodes.at(1)){
+    XYs[it.second->g_IX()] = it.second->g_X();
+    XYs[it.second->g_IY()] = it.second->g_Y();
+  }
+  /*ofstream Out;
+  Out.open("Mapping.txt", ofstream::out | ofstream::trunc);
+  for(int i=0;i<NDOF;i++){
+    Out<<IList[i]<<" "<<JList[i]<<" "<<KList[i]<<" "<<XList[i]<<endl;
+  }
+  Out.close();*/
 }
 void System::GetGradient(double* Gradient, int length) const
 {
@@ -364,11 +390,34 @@ void System::MakeSprings(){
                 for(int k = 0; k<6; k++) {
                         SpringNode[k] = nodes[k][{it.second->g_I(),it.second->g_J()}];
                 }
-                springs.insert(new Spring(SpringNode));
+                springs.insert(new Spring(SpringNode,it.second->g_I(),it.second->g_J()));
         }
 }
 
 
+void System::OutputSite(const char* filename,bool Extended)
+{
+        ofstream Out;
+        Out.open(filename, ofstream::out | ofstream::trunc);
+        /*
+for(auto& it: sites)
+        {
+                vector<int> Index(it.second->g_nodes());
+                int i(it.second->g_I()),j(it.second->g_J());
+                for(auto& ind:Index)
+                {
+                        Out<<nodes[ind][{i,j}]->g_X()<<" "<<nodes[ind][{i,j}]->g_Y()<<" ";
+                }
+                Out<<"\n";
+        }*/
+        for(auto& spring : springs){
+          for(auto& node : spring->g_nodes()){
+            Out<< node->g_X() << " " << node->g_Y()<<" ";
+          }
+          Out<<spring->get_E()<<" "<<spring->g_I()<<" "<<spring->g_J()<<"\n";
+        }
+        Out.close();
+}
 void System::OutputSite(const char* filename)
 {
         ofstream Out;
@@ -392,6 +441,7 @@ for(auto& it: sites)
         }
         Out.close();
 }
+
 void System:: g_G(int i, int j, double& Xg, double& Yg){
 }
 bool System::NeighExist(int i, int j, int k)

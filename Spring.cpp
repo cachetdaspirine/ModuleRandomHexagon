@@ -2,13 +2,17 @@
 
 using namespace std;
 
-Spring::Spring(array<Node*,6> Nodes){
+Spring::Spring(array<Node*,6> Nodes,int i, int j){
+        I = i;
+        J=j;
         nodes = Nodes;
         E = 0;
 }
 array<Node*,6> Spring::g_nodes() const{
   return nodes;
 }
+int Spring::g_I() const{return I;}
+int Spring::g_J() const{return J;}
 double Spring::get_E() const {
   //same than get_F but with the stored values
 
