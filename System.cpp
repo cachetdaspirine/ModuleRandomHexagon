@@ -1,20 +1,20 @@
 #include "Header.h"
 using namespace std;
-array<double,12*12> Spring::CouplingMaxtrix;
-array<double,12> Spring::q0;
-System::System(int* Array, double* Mc, double* q_0,int sizeX, int sizeY)
+array<double,9*9> Spring::CouplingMaxtrix;
+array<double,9> Spring::rho0;
+System::System(int* Array, double* Mc, double* rho_0,int sizeX, int sizeY)
 {
         // {{{ constructor
 
 
-        for(int i =0; i<12*12; i++) {
+        for(int i =0; i<9*9; i++) {
                 Spring::CouplingMaxtrix[i] = Mc[i];
                 CouplingMaxtrix[i] = Mc[i];
         }
 
-        for(int i = 0; i<12; i++) {
-                Spring::q0 [i] = q_0[i];
-                q0[i] = q_0[i];
+        for(int i = 0; i<9; i++) {
+                Spring::rho0 [i] = rho_0[i];
+                rho0[i] = rho_0[i];
         }
         Lx=sizeX;
         Ly=sizeY;
@@ -56,6 +56,7 @@ System::System(int* Array, double* Mc, double* q_0,int sizeX, int sizeY)
         }
         ComputeEnergy();
 
+
         // }}}
 }
 System::System(const System& old_system)
@@ -65,7 +66,7 @@ System::System(const System& old_system)
         Lx=old_system.Lx;
         Ly=old_system.Ly;
         CouplingMaxtrix = old_system.CouplingMaxtrix;
-        q0 = old_system.q0;
+        rho0 = old_system.rho0;
         //K1=old_system.K1;
         //K2=old_system.K2;
         //Kvol=old_system.Kvol;
@@ -199,6 +200,77 @@ void System::UpdateEnergy(int *Array, int SizeX, int SizeY)
 
         // }}}
 }
+int System::GetNdof() const{return 2*(nodes.at(0).size()+nodes.at(1).size());}
+void System::GetHessian(double* Hessian,int length) const
+{
+  //double Hessian[2*nodes.size()*2*nodes.size()];
+  DEBUG_IF(true){cout<<"Start the computation of the hessian"<<endl;}
+  for(auto& spring: springs){
+    spring->ddF(Hessian,length);
+  }
+}
+void System::GetDOFIndex(double* XYs) const//int* IList,int* JList,int* KList,int* XList) const
+{
+  // (i,j,1/2)
+  /*int NDOF(GetNdof());
+  array<int,3> ks0={0,2,4};
+  array<int,3> ks1={1,3,5};
+  for(auto& it: nodes.at(0))
+  {
+    for(auto& k : ks0){
+      if(CurrentState[it.second->g_I()[k]+Lx*it.second->g_J()[k]]==1){
+        IList[it.second->g_IX()] = it.second->g_I()[k];
+        JList[it.second->g_IX()] = it.second->g_J()[k];
+        KList[it.second->g_IX()] = k;
+        XList[it.second->g_IX()] = 1;
+
+
+        IList[it.second->g_IY()] = it.second->g_I()[k];
+        JList[it.second->g_IY()] = it.second->g_J()[k];
+        KList[it.second->g_IY()] = k;
+        XList[it.second->g_IY()] = 0;
+        break;
+      }
+    }
+  }
+
+  for(auto& it : nodes.at(1))
+  {
+    for(auto& k : ks1){
+      if(CurrentState[it.second->g_I()[k]+Lx*it.second->g_J()[k]]==1){
+        IList[it.second->g_IX()] = it.second->g_I()[k];
+        JList[it.second->g_IX()] = it.second->g_J()[k];
+        KList[it.second->g_IX()] = k;
+        XList[it.second->g_IX()] = 1;
+
+        IList[it.second->g_IY()] = it.second->g_I()[k];
+        JList[it.second->g_IY()] = it.second->g_J()[k];
+        KList[it.second->g_IY()] = k;
+        XList[it.second->g_IY()] = 0;
+      }
+    }
+  }*/
+  for(auto& it: nodes.at(0)){
+    XYs[it.second->g_IX()] = it.second->g_X();
+    XYs[it.second->g_IY()] = it.second->g_Y();
+  }
+  for(auto& it: nodes.at(1)){
+    XYs[it.second->g_IX()] = it.second->g_X();
+    XYs[it.second->g_IY()] = it.second->g_Y();
+  }
+  /*ofstream Out;
+  Out.open("Mapping.txt", ofstream::out | ofstream::trunc);
+  for(int i=0;i<NDOF;i++){
+    Out<<IList[i]<<" "<<JList[i]<<" "<<KList[i]<<" "<<XList[i]<<endl;
+  }
+  Out.close();*/
+}
+void System::GetGradient(double* Gradient, int length) const
+{
+  for(auto& spring: springs){
+    spring->dE(Gradient);
+  }
+}
 void System::ComputeEnergy()
 {
 //Evolv:
@@ -318,11 +390,34 @@ void System::MakeSprings(){
                 for(int k = 0; k<6; k++) {
                         SpringNode[k] = nodes[k][{it.second->g_I(),it.second->g_J()}];
                 }
-                springs.insert(new Spring(SpringNode));
+                springs.insert(new Spring(SpringNode,it.second->g_I(),it.second->g_J()));
         }
 }
 
 
+void System::OutputSite(const char* filename,bool Extended)
+{
+        ofstream Out;
+        Out.open(filename, ofstream::out | ofstream::trunc);
+        /*
+for(auto& it: sites)
+        {
+                vector<int> Index(it.second->g_nodes());
+                int i(it.second->g_I()),j(it.second->g_J());
+                for(auto& ind:Index)
+                {
+                        Out<<nodes[ind][{i,j}]->g_X()<<" "<<nodes[ind][{i,j}]->g_Y()<<" ";
+                }
+                Out<<"\n";
+        }*/
+        for(auto& spring : springs){
+          for(auto& node : spring->g_nodes()){
+            Out<< node->g_X() << " " << node->g_Y()<<" ";
+          }
+          Out<<spring->get_E()<<" "<<spring->g_I()<<" "<<spring->g_J()<<"\n";
+        }
+        Out.close();
+}
 void System::OutputSite(const char* filename)
 {
         ofstream Out;
@@ -346,6 +441,7 @@ for(auto& it: sites)
         }
         Out.close();
 }
+
 void System:: g_G(int i, int j, double& Xg, double& Yg){
 }
 bool System::NeighExist(int i, int j, int k)

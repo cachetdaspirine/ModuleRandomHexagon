@@ -37,6 +37,12 @@ void CG::Evolv(){
         //for(auto& it : Spring::q0){cout<<it<<endl;}
         //cout<<ham(DoF)<<endl;
         //cout<<ham(DoF)<<endl;
+        /*VecDoub_O deriv;
+        deriv.resize(DoF.size());
+        ham.df(DoF,deriv);
+        for(int i=0;i<deriv.size();i++){cout<<deriv[i]<<" ";}cout<<endl;
+        for(int i=0;i<DoF.size();i++){cout<<DoF[i]<<" ";}cout<<endl;
+        cout<<ham(DoF)<<endl;*/
         DoF=frprmn.minimize(DoF);
         Energy=ham(DoF);
         // output the energy of each type of springs

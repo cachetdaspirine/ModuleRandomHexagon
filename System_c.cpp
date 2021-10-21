@@ -7,6 +7,33 @@ extern "C"
   {
     return new(std::nothrow) System(array,Mc,q_0,LX,LY);
   }
+
+  int GetNDOF(void* ptr)
+  {
+    System* system = reinterpret_cast<System* >(ptr);
+    return system->GetNdof();
+  }
+  void GetHessian(void* ptr, double* Hessian, int length)
+  {
+    System* system = reinterpret_cast<System* >(ptr);
+    system->GetHessian(Hessian,length);
+    //for(int i =0 ; i<length;i++){for( int j =0;j<length;j++){cout<<Hessian[i+j*length]<<" ";}cout<<endl;}
+  }
+  void GetDOFIndex(void* ptr, double* XYs)//int* IList,int* JList,int* KList,int* XList)
+  {
+    // Size of the list must be NDOF
+    System* system = reinterpret_cast<System* >(ptr);
+    system->GetDOFIndex(XYs);//IList,JList,KList,XList);
+    /*for(int i =0;i<6;i++){
+      cout<<IList[i]<<" "<<JList[i]<<" "<<KList[i]<<" "<<XList[i]<<endl;
+    }*/
+
+  }
+  void GetGradient(void* ptr, double* Gradient, int length)
+  {
+    System* system = reinterpret_cast<System* >(ptr);
+    system->GetGradient(Gradient,length);
+  }
   double AffineDeformation(void* ptr, double Gx, double Gy)
   {
     System* system = reinterpret_cast<System* >(ptr);
@@ -75,6 +102,16 @@ return system->Get_BulkEnergy();
       {
 	System* system = reinterpret_cast<System *>(ptr);
 	system->OutputSite(filename);
+      }
+    catch(int e){cout<<"error : "<<e<<"\n";}
+  }
+  void OutputSystemSiteExtended(void* ptr, const char* filename)
+  {
+    bool Extended(true);
+    try
+      {
+  System* system = reinterpret_cast<System *>(ptr);
+  system->OutputSite(filename,Extended);
       }
     catch(int e){cout<<"error : "<<e<<"\n";}
   }
