@@ -29,7 +29,7 @@ void GetHessian(double* Hessian,int size) const;
 void GetGradient(double* Gradient, int length) const;
 double Get_BulkEnergy();
 double Get_Extension(int ax);
-void MoveNodes(double Gx, double Gy);
+void MoveNodes(double Gx, double Gy,int* NodesIndex, int NodesIndexSize);
 void UpdateEnergy(int* Array,int SizeX, int SizeY);
 //Output functions :
 void OutputSite(const char* filename);

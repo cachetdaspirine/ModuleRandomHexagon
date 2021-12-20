@@ -469,20 +469,19 @@ double System::Get_BulkEnergy(){
         cg->RemakeSprings(springs);
         return cg->ComputeEnergy();
 }
-void System::MoveNodes(double Gx, double Gy)
+void System::MoveNodes(double Gx, double Gy, int* NodesIndex, int NodesIndexSize)
 {
-   for (auto& it : nodes[0]){
-     it.second->set_X((1+Gx)*it.second->g_X());
-     it.second->set_Y((1+Gy)*it.second->g_Y());
-   }
-   for (auto& it : nodes[1]){
-     it.second->set_X((1+Gx)*it.second->g_X());
-     it.second->set_Y((1+Gy)*it.second->g_Y());
-   }
-   std::vector<Node*> nodetovect;
-     for(auto& it : nodes[0]){nodetovect.push_back(it.second);}
-     for(auto& it : nodes[1]){nodetovect.push_back(it.second);}
-   cg->RemakeDoF(nodetovect);
+  for(int i = 0; i < NodesIndexSize; i++)
+  {
+    for (auto& it : nodes[NodesIndex[i]]){
+      it.second->set_X((1+Gx)*it.second->g_X());
+      it.second->set_Y((1+Gy)*it.second->g_Y());
+    }
+  }
+  std::vector<Node*> nodetovect;
+  for(auto& it : nodes[0]){nodetovect.push_back(it.second);}
+  for(auto& it : nodes[1]){nodetovect.push_back(it.second);}
+  cg->RemakeDoF(nodetovect);
 }
 
 double System::Get_Extension(int ax)

@@ -34,11 +34,11 @@ extern "C"
     System* system = reinterpret_cast<System* >(ptr);
     system->GetGradient(Gradient,length);
   }
-  double AffineDeformation(void* ptr, double Gx, double Gy)
+  double AffineDeformation(void* ptr, double Gx, double Gy, int* NodesIndex, int NodesIndexSize)
   {
     System* system = reinterpret_cast<System* >(ptr);
     //double Ebefore(system->get_Energy());
-    system->MoveNodes(Gx,Gy);
+    system->MoveNodes(Gx,Gy,NodesIndex,NodesIndexSize);
     //cout<<"After deformation "<<system->get_Energy()<<endl<<endl;
     //cout<<"Before defomartion "<<Ebefore<<endl<<endl;
     return system->ReComputeEnergy();//-Ebefore;
