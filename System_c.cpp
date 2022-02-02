@@ -77,6 +77,7 @@ return system->Get_BulkEnergy();
       }
     catch(int e){cout<<"Error "<<e<<"\n";}
   }
+
   double ReComputeSystemEnergy(void* ptr){
     try
       {
@@ -86,6 +87,7 @@ return system->Get_BulkEnergy();
     catch(int e)
       {cout<<"Error "<<e<<"\n";}
   }
+
   double GetSystemEnergy(void* ptr)
   {
     try

@@ -473,6 +473,8 @@ void System::MoveNodes(double Gx, double Gy, int* NodesIndex, int NodesIndexSize
 {
   for(int i = 0; i < NodesIndexSize; i++)
   {
+    //cout<< "nodes index size = "<<i<<endl;
+    //cout<<"nodes :"<<NodesIndex[i]<<endl;
     for (auto& it : nodes[NodesIndex[i]]){
       it.second->set_X((1+Gx)*it.second->g_X());
       it.second->set_Y((1+Gy)*it.second->g_Y());
